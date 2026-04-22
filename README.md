@@ -57,4 +57,5 @@ Author: Akhil Chhibber
 
 LinkedIn: https://www.linkedin.com/in/akhilchhibber/  
 Medium Blogs: https://medium.com/@akhil.chibber  
-Portfolio: https://akhil-portfolio.vercel.app/
+Portfolio: https://akhil-portfolio.vercel.app/  
+Live Demo: https://akhilchibber.github.io/hr-rag-chatbot/
