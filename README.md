@@ -6,7 +6,10 @@
 Retrieval-Augmented Generation (RAG) to analyze and respond to queries about company HR policies using natural language processing.
 
 ## Dataset
+
 The dataset used in this project consists of comprehensive HR policy documents including leave policies, remote work guidelines, expense reimbursement, parental leave, performance reviews, training and development, code of conduct, and working hours policies.
+
+**Dataset Reference:** [HR-Policy-Document.pdf](HR-Policy-Document.pdf) - Complete HR policy document used for training the RAG system. This document contains all the official company policies that the chatbot uses to generate accurate, grounded answers.
 
 ## Objective
 The goal is to develop a Q&A system capable of delivering informed responses on company HR policies, demonstrating RAG's application in combining semantic data retrieval with generative language models for NLP analysis in enterprise HR management. Employees can query policies in plain English and receive accurate, grounded answers instantly.
