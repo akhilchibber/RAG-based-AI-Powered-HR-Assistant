@@ -4,39 +4,164 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RAG-based AI Powered HR Assistant</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: #f9fafb;
     }
-    .chat-container {
+
+    .chat-wrapper {
+      width: 100%;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: white;
     }
+
     .chat-header {
-      background: rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      color: white;
-      text-align: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: #1f2937;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      border-bottom: 1px solid #374151;
     }
-    .chat-messages {
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 50%;
+      background: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.125rem;
+    }
+
+    .header-text h1 {
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .header-text p {
+      color: #9ca3af;
+      font-size: 0.75rem;
+      margin: 0.125rem 0 0 0;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      hover: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+    }
+
+    .download-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .sample-questions {
+      padding: 0.75rem;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      flex-shrink: 0;
+      background: #f9fafb;
+    }
+
+    .sample-questions::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .sample-questions::-webkit-scrollbar-track {
+      background: #e5e7eb;
+    }
+
+    .sample-questions::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 2px;
+    }
+
+    .sample-btn {
+      white-space: nowrap;
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+      background: white;
+      border: 1px solid #e5e7eb;
+      color: #4b5563;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .sample-btn:hover {
+      border-color: #2563eb;
+      color: #2563eb;
+    }
+
+    .sample-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .messages-container {
       flex: 1;
       overflow-y: auto;
-      padding: 20px;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 1rem;
+      background: white;
     }
+
+    .messages-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .messages-container::-webkit-scrollbar-track {
+      background: #f3f4f6;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 3px;
+    }
+
     .message {
       display: flex;
-      gap: 10px;
+      gap: 0.75rem;
       animation: slideIn 0.3s ease-out;
     }
+
     @keyframes slideIn {
       from {
         opacity: 0;
@@ -47,82 +172,75 @@
         transform: translateY(0);
       }
     }
+
     .message.user {
       justify-content: flex-end;
     }
-    .message-content {
-      max-width: 70%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      word-wrap: break-word;
-    }
-    .message.assistant .message-content {
-      background: white;
-      color: #333;
-      border-radius: 12px 12px 12px 0;
-    }
-    .message.user .message-content {
-      background: #667eea;
-      color: white;
-      border-radius: 12px 12px 0 12px;
-    }
-    .chat-input-area {
-      padding: 20px;
-      background: white;
-      border-top: 1px solid #e0e0e0;
-      display: flex;
-      gap: 10px;
-    }
-    .chat-input {
-      flex: 1;
-      padding: 12px 16px;
-      border: 1px solid #ddd;
-      border-radius: 24px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-    .chat-input:focus {
-      border-color: #667eea;
-    }
-    .send-btn {
-      background: #667eea;
-      color: white;
-      border: none;
-      width: 40px;
-      height: 40px;
+
+    .message-icon {
+      width: 1.75rem;
+      height: 1.75rem;
       border-radius: 50%;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.3s;
+      flex-shrink: 0;
+      font-size: 0.875rem;
     }
-    .send-btn:hover {
-      background: #764ba2;
+
+    .message.assistant .message-icon {
+      background: #2563eb;
+      color: white;
     }
-    .send-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+
+    .message.user .message-icon {
+      background: #e5e7eb;
+      color: #4b5563;
     }
-    .loading {
+
+    .message-content {
+      max-width: 75%;
+      padding: 0.625rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .message.assistant .message-content {
+      background: #f3f4f6;
+      color: #1f2937;
+      border-radius: 0.5rem 0.5rem 0.5rem 0;
+    }
+
+    .message.user .message-content {
+      background: #2563eb;
+      color: white;
+      border-radius: 0.5rem 0.5rem 0 0.5rem;
+    }
+
+    .loading-dots {
       display: flex;
-      gap: 4px;
+      gap: 0.25rem;
       align-items: center;
     }
-    .loading span {
-      width: 8px;
-      height: 8px;
-      background: #667eea;
+
+    .loading-dots span {
+      width: 0.5rem;
+      height: 0.5rem;
+      background: #2563eb;
       border-radius: 50%;
       animation: bounce 1.4s infinite;
     }
-    .loading span:nth-child(2) {
+
+    .loading-dots span:nth-child(2) {
       animation-delay: 0.2s;
     }
-    .loading span:nth-child(3) {
+
+    .loading-dots span:nth-child(3) {
       animation-delay: 0.4s;
     }
+
     @keyframes bounce {
       0%, 80%, 100% {
         opacity: 0.3;
@@ -130,45 +248,106 @@
       }
       40% {
         opacity: 1;
-        transform: translateY(-10px);
+        transform: translateY(-8px);
       }
     }
-    .info-banner {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .input-area {
+      padding: 0.75rem;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 0.75rem;
+      flex-shrink: 0;
+      background: white;
+    }
+
+    .input-field {
+      flex: 1;
+      padding: 0.625rem 1rem;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .input-field:focus {
+      border-color: #2563eb;
+    }
+
+    .input-field::placeholder {
+      color: #9ca3af;
+    }
+
+    .send-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      background: #2563eb;
+      hover: #1d4ed8;
       color: white;
-      padding: 15px 20px;
-      margin: 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      text-align: center;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+
+    .send-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .send-btn:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
-  <div class="chat-container">
+  <div class="chat-wrapper">
+    <!-- Header -->
     <div class="chat-header">
-      <h1 style="margin: 0; font-size: 24px; font-weight: bold;">HR Policy Assistant</h1>
-      <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">Ask me anything about company HR policies</p>
+      <div class="header-left">
+        <div class="header-icon">🤖</div>
+        <div class="header-text">
+          <h1>HR Policy Assistant</h1>
+          <p>Answers from official HR documents only</p>
+        </div>
+      </div>
+      <a href="HR-Policy-Document.pdf" download="HR-Policy-Document.pdf" class="download-btn">
+        ⬇️ Download Policy Doc
+      </a>
     </div>
 
-    <div class="info-banner">
-      ℹ️ This is a demo interface. To use the full chatbot with real HR policies, please visit the <a href="https://akhil-portfolio.vercel.app/project/26" style="color: white; text-decoration: underline;">portfolio website</a>.
+    <!-- Sample Questions -->
+    <div class="sample-questions" id="sampleQuestionsContainer">
+      <button class="sample-btn" onclick="askQuestion('How many vacation days do I get per year?')">How many vacation days do I get per year?</button>
+      <button class="sample-btn" onclick="askQuestion('Can I work from home full time?')">Can I work from home full time?</button>
+      <button class="sample-btn" onclick="askQuestion('What is the notice period if I resign?')">What is the notice period if I resign?</button>
+      <button class="sample-btn" onclick="askQuestion('How much is the meal allowance for travel?')">How much is the meal allowance for travel?</button>
+      <button class="sample-btn" onclick="askQuestion('How many weeks of maternity leave do I get?')">How many weeks of maternity leave do I get?</button>
     </div>
 
-    <div class="chat-messages" id="messages">
+    <!-- Messages -->
+    <div class="messages-container" id="messagesContainer">
       <div class="message assistant">
+        <div class="message-icon">🤖</div>
         <div class="message-content">
-          👋 Hi! I'm the HR Assistant. Ask me anything about the company's HR policies — leave, remote work, expenses, notice periods, and more.
+          Hi! I'm the HR Assistant. Ask me anything about the company's HR policies — leave, remote work, expenses, notice periods, and more.
         </div>
       </div>
     </div>
 
-    <div class="chat-input-area">
+    <!-- Input Area -->
+    <div class="input-area">
       <input 
         type="text" 
-        class="chat-input" 
-        id="input" 
+        class="input-field" 
+        id="inputField" 
         placeholder="Ask an HR question..."
         onkeypress="handleKeyPress(event)"
       >
@@ -185,32 +364,42 @@
     let isLoading = false;
 
     function addMessage(text, isUser) {
-      const messagesDiv = document.getElementById('messages');
+      const container = document.getElementById('messagesContainer');
       const messageDiv = document.createElement('div');
       messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+      
+      const iconDiv = document.createElement('div');
+      iconDiv.className = 'message-icon';
+      iconDiv.textContent = isUser ? '👤' : '🤖';
       
       const contentDiv = document.createElement('div');
       contentDiv.className = 'message-content';
       contentDiv.textContent = text;
       
+      messageDiv.appendChild(iconDiv);
       messageDiv.appendChild(contentDiv);
-      messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      container.appendChild(messageDiv);
+      container.scrollTop = container.scrollHeight;
     }
 
     function addLoadingMessage() {
-      const messagesDiv = document.getElementById('messages');
+      const container = document.getElementById('messagesContainer');
       const messageDiv = document.createElement('div');
       messageDiv.className = 'message assistant';
       messageDiv.id = 'loading-message';
       
+      const iconDiv = document.createElement('div');
+      iconDiv.className = 'message-icon';
+      iconDiv.textContent = '🤖';
+      
       const contentDiv = document.createElement('div');
-      contentDiv.className = 'message-content loading';
+      contentDiv.className = 'message-content loading-dots';
       contentDiv.innerHTML = '<span></span><span></span><span></span>';
       
+      messageDiv.appendChild(iconDiv);
       messageDiv.appendChild(contentDiv);
-      messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      container.appendChild(messageDiv);
+      container.scrollTop = container.scrollHeight;
     }
 
     function removeLoadingMessage() {
@@ -221,7 +410,7 @@
     }
 
     async function sendMessage() {
-      const input = document.getElementById('input');
+      const input = document.getElementById('inputField');
       const question = input.value.trim();
       
       if (!question || isLoading) return;
@@ -261,6 +450,11 @@
       }
     }
 
+    function askQuestion(question) {
+      document.getElementById('inputField').value = question;
+      sendMessage();
+    }
+
     function handleKeyPress(event) {
       if (event.key === 'Enter' && !isLoading) {
         sendMessage();
@@ -269,7 +463,7 @@
 
     // Focus input on load
     window.addEventListener('load', () => {
-      document.getElementById('input').focus();
+      document.getElementById('inputField').focus();
     });
   </script>
 </body>
